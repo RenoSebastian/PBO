@@ -1,0 +1,120 @@
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ */
+
+package com.mycompany.restaurantmain;
+
+/**
+ *
+ * @author lenovo
+ */
+
+
+
+public class RestaurantMain {
+    public static void main(String[] args) {
+        Restaurant restaurant = new Restaurant();
+        
+        restaurant.tambahMenuMakanan("Bala-Bala", 1_000, 20);
+        restaurant.tambahMenuMakanan("Gehu", 1_000, 0);
+        restaurant.tambahMenuMakanan("Tahu", 1_000, 0);
+        restaurant.tambahMenuMakanan("Molen", 1_000, 20);
+        
+        restaurant.tampilMenuMakanan();
+        
+        // Contoh pemesanan menu
+        restaurant.pesanMenu("Bala-Bala", 5); // Memesan 5 Bala-Bala
+        restaurant.pesanMenu("Gehu", 3); // Memesan 3 Gehu
+        
+        restaurant.tampilMenuMakanan(); // Menampilkan menu setelah pemesanan
+    }
+}
+
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.restaurantmain;
+
+/**
+ *
+ * @author lenovo
+ */
+import java.util.ArrayList;
+import java.util.List;
+
+public class Restaurant {
+    private List<MenuItem> menuItems;
+
+    public Restaurant() {
+        menuItems = new ArrayList<>();
+    }
+
+    public void tambahMenuMakanan(String nama, double harga, int stok) {
+        MenuItem newItem = new MenuItem(nama, harga, stok);
+        menuItems.add(newItem);
+    }
+
+    public void tampilMenuMakanan() {
+        for (MenuItem item : menuItems) {
+            if (!item.isOutOfStock()) {
+                System.out.println(item.getNama() + "[" + item.getStok() + "]" + "\tRp. " + item.getHarga());
+            }
+        }
+    }
+
+    public void pesanMenu(String nama, int jumlah) {
+        for (MenuItem item : menuItems) {
+            if (item.getNama().equalsIgnoreCase(nama)) {
+                item.kurangiStok(jumlah);
+                return;
+            }
+        }
+        System.out.println("Menu " + nama + " tidak ditemukan.");
+    }
+}
+/*
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
+ * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
+ */
+package com.mycompany.restaurantmain;
+
+/**
+ *
+ * @author lenovo
+ */
+public class MenuItem {
+    private String nama;
+    private double harga;
+    private int stok;
+
+    public MenuItem(String nama, double harga, int stok) {
+        this.nama = nama;
+        this.harga = harga;
+        this.stok = stok;
+    }
+
+    public String getNama() {
+        return nama;
+    }
+
+    public double getHarga() {
+        return harga;
+    }
+
+    public int getStok() {
+        return stok;
+    }
+
+    public boolean isOutOfStock() {
+        return stok == 0;
+    }
+
+    public void kurangiStok(int jumlah) {
+        if (jumlah <= stok) {
+            stok -= jumlah;
+        } else {
+            System.out.println("Stok tidak cukup.");
+        }
+    }
+}
