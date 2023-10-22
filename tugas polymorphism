@@ -1,0 +1,418 @@
+public class Firm {
+    public static void main(String[] args) {
+        Staff personnel = new Staff(); // Ini akan membuat objek Staff dan menginisialisasi daftar staf.
+        personnel.payday(); // Ini akan memanggil metode payday pada objek Staff untuk membayar semua staf.
+    }
+}
+
+class Staff {
+    StaffMember[] staffList;
+
+    public Staff() {
+        staffList = new StaffMember[8];
+
+        staffList[0] = new Executive("Sam", "123 Main Line", "555-0469", "123-45-6789", 2423.07);
+        staffList[1] = new Employee("Carla", "456 Off Line", "555-0101", "987-65-4321", 1246.15);
+        staffList[2] = new Employee("Woody", "789 Off Rocker", "555-0000", "010-20-3040", 1169.23);
+        staffList[3] = new Hourly("Diane", "678 Fifth Ave.", "555-0690", "958-47-3625", 10.55);
+        staffList[4] = new Volunteer("Norm", "987 Suds Blvd", "555-8374");
+        staffList[5] = new Volunteer("Cliff", "321 Duds Lane", "555-7282");
+        staffList[6] = new Commission("John", "123 Elm St", "555-1234", "123-45-6789", 6.25, 0.20);
+        staffList[7] = new Commission("Jane", "456 Oak Ave", "555-5678", "987-65-4321", 9.75, 0.15);
+        
+        ((Executive)staffList[0]).awardBonus (500.00);
+        ((Hourly)staffList[3]).addHours (40);
+        ((Commission) staffList[6]).addSales(400.0);
+        ((Commission) staffList[7]).addSales(950.0);
+    }
+
+         public void payday () 
+        {
+        double amount;
+        for (int count=0; count < staffList.length; count++)
+         {
+            System.out.println (staffList[count]); // polymorphic
+            amount = staffList[count].pay(); // polymorphic
+            if (amount == 0.0)
+                System.out.println ("Thanks!");
+            else
+                System.out.println ("Paid: " + amount);
+            
+            System.out.println ("------------------------------");
+       }
+    }
+}
+
+abstract class StaffMember {
+    protected String name;
+    protected String address;
+    protected String phone;
+
+    public StaffMember(String eName, String eAddress, String ePhone) {
+        name = eName;
+        address = eAddress;
+        phone = ePhone;
+    }
+
+    @Override
+    public String toString() {
+        String result = "Name: " + name + "\n";
+        result += "Address: " + address + "\n";
+        result += "Phone: " + phone;
+        return result;
+    }
+
+    public abstract double pay();
+}
+
+class Volunteer extends StaffMember {
+    public Volunteer(String eName, String eAddress, String ePhone) {
+        super(eName, eAddress, ePhone);
+    }
+
+    public double pay() {
+        return 0.0;
+    }
+}
+
+class Executive extends StaffMember {
+    private String socialSecurityNumber;
+    private double bonus;
+
+    public Executive(String eName, String eAddress, String ePhone, String socialSecurityNumber, double bonus) {
+        super(eName, eAddress, ePhone);
+        this.socialSecurityNumber = socialSecurityNumber;
+        this.bonus = bonus;
+    }
+
+    public double pay() {
+        return bonus;
+    }
+
+    public void awardBonus(double execBonus) {
+        bonus += execBonus;
+    }
+}
+
+class Employee extends StaffMember {
+    private String socialSecurityNumber;
+    double payRate;
+
+    public Employee(String eName, String eAddress, String ePhone, String socialSecurityNumber, double payRate) {
+        super(eName, eAddress, ePhone);
+        this.socialSecurityNumber = socialSecurityNumber;
+        this.payRate = payRate;
+    }
+
+    public double pay() {
+        return payRate;
+    }
+}
+
+class Hourly extends Employee {
+    private int hoursWorked;
+
+    public Hourly(String eName, String eAddress, String ePhone, String socialSecurityNumber, double payRate) {
+        super(eName, eAddress, ePhone, socialSecurityNumber, payRate);
+        hoursWorked = 0;
+    }
+    public void addHours (int moreHours)
+    {
+        hoursWorked += moreHours;
+    }
+    
+    public double pay()
+    {
+        double payment = payRate * hoursWorked;
+        hoursWorked = 0;
+        return payment;
+    }
+    
+    public String toString()
+    {
+        String result = super.toString();
+        result += "\nCurrent hours: " + hoursWorked;
+        return result;
+    } 
+}
+
+ class Commission extends Hourly {
+    private double totalSales;
+    private double commissionRate;
+    public Commission(String eName, String eAddress, String ePhone, String socSecNumber, double rate, double commissionRate) 
+    {
+    super(eName, eAddress, ePhone, socSecNumber, rate);
+    this.commissionRate = commissionRate;
+    this.totalSales = 0.0;
+    }
+     public void addSales(double totalSales) 
+     {
+        this.totalSales += totalSales;
+     }
+        
+     @Override
+     public double pay() 
+     {
+        double hourlyPay = super.pay();
+        double commissionPay = totalSales * commissionRate;
+        totalSales = 0.0; // Set total sales back to 0
+        return hourlyPay + commissionPay;
+     }
+ 
+     @Override
+     public String toString() 
+     {
+        String hourlyInfo = super.toString();
+        return "Commission Employee\n" + hourlyInfo + "\nTotal Sales: $" + 
+        totalSales;
+    }
+}
+
+import java.util.Scanner;
+
+public class WeeklySales {
+    public static void main(String[] args) {
+        Scanner scan = new Scanner(System.in);
+        System.out.println("Enter the number of salespeople: ");
+        int numSalespeople = scan.nextInt();
+        SalesPerson[] salesStaff = new SalesPerson[numSalespeople];
+        for (int i = 0; i < numSalespeople; i++) {
+            System.out.println("Enter the first name for salesperson " + (i + 1) + ": ");
+            String firstName = scan.next();
+            System.out.println("Enter the last name for salesperson " + (i + 1) + ": ");
+            String lastName = scan.next();
+            System.out.println("Enter the total sales for salesperson " + (i + 1) + ": ");
+            int totalSales = scan.nextInt();
+            salesStaff[i] = new SalesPerson(firstName, lastName, totalSales);
+        }
+        Sorting.insertionSort(salesStaff);
+        System.out.println("\nRanking of Sales for the week\n");
+        for (SalesPerson s : salesStaff)
+            System.out.println(s);
+    }
+}
+
+import java.util.Scanner;
+
+public class Strings {
+    public static void main(String[] args) {
+        String[] stringList;
+        int size;
+        Scanner scan = new Scanner(System.in);
+        System.out.println("\nHow many strings do you want to sort? ");
+        size = scan.nextInt();
+        stringList = new String[size];
+        System.out.println("\nEnter the strings...");
+        for (int i = 0; i < size; i++)
+            stringList[i] = scan.next();
+        Sorting.insertionSort(stringList);
+        System.out.println("Your strings in sorted order...");
+        for (int i = 0; i < size; i++)
+            System.out.println(stringList[i]);
+        System.out.println();
+    }
+}
+
+public class Sorting {
+    public static void selectionSort(Comparable[] list) {
+        int min;
+        Comparable temp;
+        for (int index = 0; index < list.length - 1; index++) {
+            min = index;
+            for (int scan = index + 1; scan < list.length; scan++)
+                if (list[scan].compareTo(list[min]) > 0)
+                    min = scan;
+            temp = list[min];
+            list[min] = list[index];
+            list[index] = temp;
+        }
+    }
+
+    public static void insertionSort(Comparable[] list) {
+        for (int index = 1; index < list.length; index++) {
+            Comparable key = list[index];
+            int position = index;
+            while (position > 0 && key.compareTo(list[position - 1]) < 0) {
+                list[position] = list[position - 1];
+                position--;
+            }
+            list[position] = key;
+        }
+    }
+}
+
+public class SalesPerson implements Comparable {
+    private String firstName, lastName;
+    private int totalSales;
+
+    public SalesPerson(String first, String last, int sales) {
+        super();
+        this.firstName = first;
+        this.lastName = last;
+        this.totalSales = sales;
+    }
+
+    public String toString() {
+        return lastName + ", " + firstName + ": \t" + totalSales;
+    }
+
+    public boolean equals(Object other) {
+        return (lastName.equals(((SalesPerson) other).getLastName())
+                && firstName.equals(((SalesPerson) other).getFirstName()));
+    }
+
+    public int compareTo(Object other) {
+        SalesPerson otherPerson = (SalesPerson) other;
+        int salesComparison = Integer.compare(otherPerson.totalSales, this.totalSales);
+        if (salesComparison == 0) {
+            int lastNameComparison = this.lastName.compareTo(otherPerson.lastName);
+            if (lastNameComparison == 0) {
+                return this.firstName.compareTo(otherPerson.firstName);
+            } else {
+                return lastNameComparison;
+            }
+        } else {
+            return salesComparison;
+        }
+    }
+
+    public String getFirstName() {
+        return firstName;
+    }
+
+    public String getLastName() {
+        return lastName;
+    }
+
+    public int getSales() {
+        return totalSales;
+    }
+}
+
+import java.util.Scanner;
+
+public class Numbers {
+    public static void main(String[] args) {
+        Integer[] intList;
+        int size;
+        Scanner scan = new Scanner(System.in);
+        System.out.println("\nHow many integers do you want to sort? ");
+        size = scan.nextInt();
+        intList = new Integer[size];
+        System.out.println("\nEnter the numbers...");
+        for (int i = 0; i < size; i++)
+            intList[i] = scan.nextInt();
+        Sorting.insertionSort(intList);
+        System.out.println("Your numbers in sorted order...");
+        for (int i = 0; i < size; i++)
+            System.out.println(intList[i] + " ");
+        System.out.println();
+    }
+}
+
+
+import java.text.DecimalFormat;
+
+public class PaintThings {
+    public static void main(String[] args) {
+        final double COVERAGE = 350;
+        Paint paint = new Paint(COVERAGE);
+        Rectangle deck = new Rectangle(20, 35);
+        Sphere bigBall = new Sphere(15);
+        Cylinder tank = new Cylinder(10, 30);
+        double deckAmt = paint.amount(deck);
+        double ballAmt = paint.amount(bigBall);
+        double tankAmt = paint.amount(tank);
+        DecimalFormat fmt = new DecimalFormat("0.#");
+        System.out.println("\nNumber of gallons of paint needed...");
+        System.out.println("Deck " + fmt.format(deckAmt));
+        System.out.println("Big Ball " + fmt.format(ballAmt));
+        System.out.println("Tank " + fmt.format(tankAmt));
+    }
+}
+
+class Rectangle extends Shape {
+    private double length;
+    private double width;
+
+    public Rectangle(double l, double w) {
+        super("Rectangle");
+        length = l;
+        width = w;
+    }
+
+    public double area() {
+        return length * width;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " of length " + length + " and width " + width;
+    }
+}
+
+abstract class Shape {
+    private String shapeName;
+
+    public Shape(String name) {
+        shapeName = name;
+    }
+
+    public abstract double area();
+
+    @Override
+    public String toString() {
+        return shapeName;
+    }
+}
+
+class Sphere extends Shape {
+    private double radius;
+
+    public Sphere(double r) {
+        super("Sphere");
+        radius = r;
+    }
+
+    public double area() {
+        return 4 * Math.PI * radius * radius;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " of radius " + radius;
+    }
+}
+
+class Cylinder extends Shape {
+    private double radius;
+    private double height;
+
+    public Cylinder(double r, double h) {
+        super("Cylinder");
+        radius = r;
+        height = h;
+    }
+
+    public double area() {
+        return Math.PI * radius * radius * height;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString() + " of radius " + radius + " and height " + height;
+    }
+}
+
+class Paint {
+    private double coverage;
+
+    public Paint(double c) {
+        this.coverage = c;
+    }
+
+    public double amount(Shape s) {
+        System.out.println("Computing amount for " + s);
+        return s.area() / coverage;
+    }
+}
